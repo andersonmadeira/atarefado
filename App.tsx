@@ -1,22 +1,48 @@
 import React, { useState } from 'react'
-import { SafeAreaView, StyleSheet, ScrollView, StatusBar, TouchableOpacity } from 'react-native'
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  StatusBar,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+
+interface ResizableProps {
+  windowSize: {
+    width: number
+    height: number
+  }
+}
+
+const Content = styled.View`
+  flex: 1;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+`
+
+const ContentColumnRaw = styled.View<ResizableProps>`
+  flex: 0 ${props => Math.ceil(props.windowSize.width) / 2 - 20}px;
+`
 
 const Card = styled.View`
   color: #777777;
   background-color: #fff;
   border-radius: 8px;
-  margin-bottom: 10px;
   padding: 10px 20px;
+  margin: 5px;
 `
 
 const CardContent = styled.Text`
-  font-size: 20px;
+  font-size: 15px;
 `
 
-const MainContent = styled.View`
-  margin: 10px 20px;
+const Main = styled.View`
+  flex: 1;
 `
 
 const SearchContainer = styled.View`
@@ -24,7 +50,7 @@ const SearchContainer = styled.View`
   align-items: center;
   background-color: #ededed;
   border-radius: 15px;
-  margin-bottom: 15px;
+  margin: 15px;
   padding: 0px 15px;
 `
 
@@ -34,17 +60,31 @@ const SearchInput = styled.TextInput`
   font-size: 15px;
 `
 
-const App = () => {
-  const [searchTerm, setSearchTerm] = useState('')
+const ContentColumn: React.FC = ({ children }) => {
+  const { width, height } = useWindowDimensions()
 
-  console.log('searchTerm', searchTerm)
+  return <ContentColumnRaw windowSize={{ width, height }}>{children}</ContentColumnRaw>
+}
+
+const AppScrollView = styled.ScrollView`
+  height: 100%;
+  background-color: #f7f7f7;
+`
+
+const ClearButton = styled.TouchableOpacity`
+  padding: 8;
+  margin-right: -4;
+`
+
+const App: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('')
 
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#F7F7F7" />
       <SafeAreaView>
-        <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
-          <MainContent>
+        <AppScrollView>
+          <Main>
             <SearchContainer>
               <Icon name="search" size={15} color="#999" />
               <SearchInput
@@ -53,38 +93,61 @@ const App = () => {
                 onChangeText={text => setSearchTerm(text)}
               />
               {searchTerm !== '' && (
-                <TouchableOpacity onPress={() => setSearchTerm('')} style={styles.clearButton}>
+                <ClearButton onPress={() => setSearchTerm('')}>
                   <Icon name="times" size={15} color="#999" />
-                </TouchableOpacity>
+                </ClearButton>
               )}
             </SearchContainer>
-            <Card>
-              <CardContent>Something here</CardContent>
-            </Card>
-            <Card>
-              <CardContent>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</CardContent>
-            </Card>
-            <Card>
-              <CardContent>Magni ipsam, provident explicabo facilis nihil doloremque.</CardContent>
-            </Card>
-            <Card>
-              <CardContent>vel quisquam, esse quidem quae ea dolorum aut corrupt</CardContent>
-            </Card>
-          </MainContent>
-        </ScrollView>
+            <Content>
+              <ContentColumn>
+                <Card>
+                  <CardContent>Something here</CardContent>
+                </Card>
+                <Card>
+                  <CardContent>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. consectetur
+                    adipisicing elit.
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent>
+                    Magni ipsam, provident explicabo facilis nihil doloremque.
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent>vel quisquam, esse quidem quae ea dolorum aut corrupt</CardContent>
+                </Card>
+              </ContentColumn>
+              <ContentColumn>
+                <Card>
+                  <CardContent>
+                    Magni ipsam, provident explicabo facilis nihil doloremque.
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent>Something here</CardContent>
+                </Card>
+                <Card>
+                  <CardContent>vel quisquam, esse quidem quae ea dolorum aut corrupt</CardContent>
+                </Card>
+                <Card>
+                  <CardContent>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. consectetur
+                    adipisicing elit.
+                  </CardContent>
+                </Card>
+              </ContentColumn>
+            </Content>
+          </Main>
+        </AppScrollView>
       </SafeAreaView>
     </>
   )
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: '#F7F7F7',
-  },
-  clearButton: {
-    padding: 8,
-    marginRight: -4,
-  },
+  scrollView: {},
+  clearButton: {},
 })
 
 export default App
