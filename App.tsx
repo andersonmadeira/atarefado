@@ -1,12 +1,5 @@
 import React, { useState } from 'react'
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  StatusBar,
-  TouchableOpacity,
-  useWindowDimensions,
-} from 'react-native'
+import { SafeAreaView, StyleSheet, StatusBar, useWindowDimensions } from 'react-native'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 
@@ -32,7 +25,7 @@ const ContentColumnRaw = styled.View<ResizableProps>`
 const Card = styled.View`
   color: #777777;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 15px;
   padding: 10px 20px;
   margin: 5px;
 `
@@ -49,7 +42,7 @@ const SearchContainer = styled.View`
   flex-direction: row;
   align-items: center;
   background-color: #ededed;
-  border-radius: 15px;
+  border-radius: 25px;
   margin: 15px;
   padding: 0px 15px;
 `
@@ -72,8 +65,8 @@ const AppScrollView = styled.ScrollView`
 `
 
 const ClearButton = styled.TouchableOpacity`
-  padding: 8;
-  margin-right: -4;
+  padding: 8px;
+  margin-right: -4px;
 `
 
 const App: React.FC = () => {
@@ -117,6 +110,9 @@ const App: React.FC = () => {
                 <Card>
                   <CardContent>vel quisquam, esse quidem quae ea dolorum aut corrupt</CardContent>
                 </Card>
+                <Card>
+                  <CardContent>Something here</CardContent>
+                </Card>
               </ContentColumn>
               <ContentColumn>
                 <Card>
@@ -134,6 +130,11 @@ const App: React.FC = () => {
                   <CardContent>
                     Lorem ipsum dolor sit, amet consectetur adipisicing elit. consectetur
                     adipisicing elit.
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent>
+                    Magni ipsam, provident explicabo facilis nihil doloremque.
                   </CardContent>
                 </Card>
               </ContentColumn>
