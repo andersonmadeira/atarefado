@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { SafeAreaView, StyleSheet, StatusBar, useWindowDimensions } from 'react-native'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import AntIcon from 'react-native-vector-icons/AntDesign'
+import { FabButton } from './src/components'
 
 interface ResizableProps {
   windowSize: {
@@ -141,6 +143,22 @@ const App: React.FC = () => {
             </Content>
           </Main>
         </AppScrollView>
+        <FabButton
+          buttons={[
+            {
+              icon: <AntIcon name="check" size={20} color="#fff" />,
+              action: () => console.log('Check!'),
+            },
+            {
+              icon: <AntIcon name="tago" size={20} color="#fff" />,
+              action: () => console.log('Category!'),
+            },
+            {
+              icon: <AntIcon name="filetext1" size={20} color="#fff" />,
+              action: () => console.log('Note!'),
+            },
+          ]}
+        />
       </SafeAreaView>
     </>
   )
