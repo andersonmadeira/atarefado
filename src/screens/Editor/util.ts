@@ -18,7 +18,7 @@ export const editorHtml = `
   </head>
   <body>
     <div id="focusStealer" />
-    <div id="editor" contenteditable="true">Heello <b>world</b></div>
+    <div id="editor" contenteditable="true"></div>
     <script>
       const editor = document.querySelector('#editor')
 

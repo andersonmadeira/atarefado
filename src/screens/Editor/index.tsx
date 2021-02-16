@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import {
   Dimensions,
   StyleSheet,
@@ -22,12 +22,17 @@ type EditorScreenRouteProp = RouteProp<RootStackParamList, 'Editor'>
 export const EditorScreen: React.FC = () => {
   const navigation = useNavigation<EditorScreenNavigationProp>()
   const {
-    params: { noteId },
+    params: { note },
   } = useRoute<EditorScreenRouteProp>()
-  const [title, setTitle] = useState('Note title')
+  const [title, setTitle] = useState(note.title)
+  const [content, setContent] = useState(note.content)
   const [isEditingNote, setIsEditingNote] = useState(false)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const editorRef = useRef<WebView>()
+
+  const executeJS = useCallback((code: string) => {
+    editorRef.current.injectJavaScript(code)
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -41,7 +46,7 @@ export const EditorScreen: React.FC = () => {
               if (isEditingTitle) {
                 Keyboard.dismiss()
               } else {
-                editorRef.current.injectJavaScript(`document.querySelector("#editor").blur()`)
+                executeJS('editor.blur()')
               }
 
               setIsEditingTitle(false)
@@ -57,9 +62,12 @@ export const EditorScreen: React.FC = () => {
         value={title}
         onFocus={() => setIsEditingTitle(true)}
         onChangeText={text => setTitle(text)}
+        placeholder="Note title"
       />
       <WebView
         ref={editorRef}
+        source={{ html: editorHtml }}
+        onLoadEnd={event => executeJS(`editor.innerHTML = "${content}"`)}
         onMessage={event => {
           if (event.nativeEvent.data === 'edit-start') {
             setIsEditingNote(true)
@@ -70,7 +78,6 @@ export const EditorScreen: React.FC = () => {
         }}
         startInLoadingState={true}
         style={styles.editor}
-        source={{ html: editorHtml }}
       />
       {isEditingNote && (
         <View style={styles.formatToolbar}>

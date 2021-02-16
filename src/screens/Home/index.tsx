@@ -1,13 +1,11 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   Dimensions,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   TextInput,
-  TouchableWithoutFeedback,
   View,
   TouchableOpacity,
 } from 'react-native'
@@ -16,16 +14,101 @@ import AntIcon from 'react-native-vector-icons/AntDesign'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 
-import { RootStackParamList } from '../types'
-import { FabButton } from '../../components'
+import { Note, RootStackParamList } from '../types'
+import { FabButton, NoteCard } from '../../components'
 
 const windowSize = Dimensions.get('window')
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
 
+export const notes: Note[] = [
+  {
+    id: '1',
+    title: 'Something',
+    content: '<b>Something</b> here',
+  },
+  {
+    id: '2',
+    title: 'Lorem ipsum',
+    content:
+      '<em>Lorem</em> ipsum <b>dolor</b> sit, amet consectetur adipisicing elit. consectetur adipisicing elit.',
+  },
+  {
+    id: '3',
+    title: 'Magni ipsam',
+    content: 'Magni ipsam, <em>provident</em> explicabo facilis nihil doloremque.',
+  },
+  {
+    id: '4',
+    title: 'Magni ipsam',
+    content: 'Magni <em><b>ipsam</b></em>, provident explicabo facilis nihil doloremque.',
+  },
+  {
+    id: '5',
+    title: 'Magni ipsam',
+    content: '<b>Magni ipsam, provident explicabo</b> facilis nihil doloremque.',
+  },
+  {
+    id: '6',
+    title: 'Vel quisquam',
+    content: '<b>Vel quisquam</b>, esse <em><b>quidem quae ea dolorum</b></em> aut corrupt',
+  },
+  {
+    id: '7',
+    title: 'Fugit magnam',
+    content: 'Fugit magnam quaerat molestiae voluptate adipisci harum reprehenderit aliquam',
+  },
+  {
+    id: '8',
+    title: 'Autem optio',
+    content: 'Autem optio exercitationem consequuntur cumque impedit',
+  },
+  {
+    id: '9',
+    title: 'Animi tempora',
+    content: 'Animi tempora asperiores illum facere! Accusamus cupiditate accusantium quia!',
+  },
+  {
+    id: '10',
+    title: 'Corporis cupiditate',
+    content: 'Corporis cupiditate dolorum iure quisquam numquam nesciunt',
+  },
+]
+
 export const HomeScreen: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const navigation = useNavigation<HomeScreenNavigationProp>()
+
+  const noteList = useMemo(() => {
+    const leftNotes = []
+    const rightNotes = []
+
+    for (let i = 0; i < notes.length; i++) {
+      const noteElement = (
+        <NoteCard
+          key={notes[i].id}
+          text={notes[i].content.replace(/(<([^>]+)>)/gi, '')}
+          onPress={() => navigation.navigate('Editor', { note: notes[i] })}
+        />
+      )
+
+      if ((i + 1) % 2) {
+        leftNotes.push(noteElement)
+        continue
+      }
+
+      rightNotes.push(noteElement)
+    }
+
+    return (
+      <>
+        <View style={styles.contentColumn}>{leftNotes}</View>
+        <View style={styles.contentColumn}>{rightNotes}</View>
+      </>
+    )
+  }, [navigation])
+
+  //
 
   return (
     <>
@@ -47,62 +130,7 @@ export const HomeScreen: React.FC = () => {
                 </TouchableOpacity>
               )}
             </View>
-            <View style={styles.content}>
-              <View style={styles.contentColumn}>
-                <TouchableWithoutFeedback
-                  onPress={() => navigation.navigate('Editor', { noteId: 'idhere' })}
-                >
-                  <View style={styles.card}>
-                    <Text style={styles.cardContent}>Something here</Text>
-                  </View>
-                </TouchableWithoutFeedback>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. consectetur
-                    adipisicing elit.
-                  </Text>
-                </View>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>
-                    Magni ipsam, provident explicabo facilis nihil doloremque.
-                  </Text>
-                </View>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>
-                    vel quisquam, esse quidem quae ea dolorum aut corrupt
-                  </Text>
-                </View>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>Something here</Text>
-                </View>
-              </View>
-              <View style={styles.contentColumn}>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>
-                    Magni ipsam, provident explicabo facilis nihil doloremque.
-                  </Text>
-                </View>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>Something here</Text>
-                </View>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>
-                    vel quisquam, esse quidem quae ea dolorum aut corrupt
-                  </Text>
-                </View>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. consectetur
-                    adipisicing elit.
-                  </Text>
-                </View>
-                <View style={styles.card}>
-                  <Text style={styles.cardContent}>
-                    Magni ipsam, provident explicabo facilis nihil doloremque.
-                  </Text>
-                </View>
-              </View>
-            </View>
+            <View style={styles.content}>{noteList}</View>
           </View>
         </ScrollView>
         <FabButton
@@ -162,16 +190,5 @@ const styles = StyleSheet.create({
   contentColumn: {
     flexGrow: 0,
     flexBasis: Math.ceil(windowSize.width) / 2 - 20,
-  },
-  card: {
-    color: '#777777',
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    margin: 5,
-  },
-  cardContent: {
-    fontSize: 15,
   },
 })
