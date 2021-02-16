@@ -1,83 +1,24 @@
 import React, { useState } from 'react'
 import {
+  Dimensions,
   SafeAreaView,
+  ScrollView,
   StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
   TouchableWithoutFeedback,
-  useWindowDimensions,
+  View,
 } from 'react-native'
-import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import AntIcon from 'react-native-vector-icons/AntDesign'
 import { FabButton } from '../../components'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { RootStackParamList } from '../types'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
-interface ResizableProps {
-  windowSize: {
-    width: number
-    height: number
-  }
-}
-
-const Content = styled.View`
-  flex: 1;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
-`
-
-const ContentColumnRaw = styled.View<ResizableProps>`
-  flex: 0 ${props => Math.ceil(props.windowSize.width) / 2 - 20}px;
-`
-
-const Card = styled.View`
-  color: #777777;
-  background-color: #fff;
-  border-radius: 15px;
-  padding: 10px 20px;
-  margin: 5px;
-`
-
-const CardContent = styled.Text`
-  font-size: 15px;
-`
-
-const Main = styled.View`
-  flex: 1;
-`
-
-const SearchContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-  background-color: #ededed;
-  border-radius: 25px;
-  margin: 15px;
-  padding: 0px 15px;
-`
-
-const SearchInput = styled.TextInput`
-  flex: 1;
-  padding-left: 10px;
-  font-size: 15px;
-`
-
-const ContentColumn: React.FC = ({ children }) => {
-  const { width, height } = useWindowDimensions()
-
-  return <ContentColumnRaw windowSize={{ width, height }}>{children}</ContentColumnRaw>
-}
-
-const AppScrollView = styled.ScrollView`
-  height: 100%;
-  background-color: #f7f7f7;
-`
-
-const ClearButton = styled.TouchableOpacity`
-  padding: 8px;
-  margin-right: -4px;
-`
+const windowSize = Dimensions.get('window')
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
 
@@ -89,75 +30,80 @@ export const HomeScreen: React.FC = () => {
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#F7F7F7" />
       <SafeAreaView>
-        <AppScrollView>
-          <Main>
-            <SearchContainer>
+        <ScrollView style={styles.scrollView}>
+          <View style={styles.main}>
+            <View style={styles.searchContainer}>
               <Icon name="search" size={15} color="#999" />
-              <SearchInput
+              <TextInput
                 placeholder="Procurar anotações"
                 value={searchTerm}
                 onChangeText={text => setSearchTerm(text)}
+                style={styles.searchInput}
               />
               {searchTerm !== '' && (
-                <ClearButton onPress={() => setSearchTerm('')}>
+                <TouchableOpacity onPress={() => setSearchTerm('')} style={styles.clearButton}>
                   <Icon name="times" size={15} color="#999" />
-                </ClearButton>
+                </TouchableOpacity>
               )}
-            </SearchContainer>
-            <Content>
-              <ContentColumn>
+            </View>
+            <View style={styles.content}>
+              <View style={styles.contentColumn}>
                 <TouchableWithoutFeedback
                   onPress={() => navigation.navigate('Editor', { noteId: 'idhere' })}
                 >
-                  <Card>
-                    <CardContent>Something here</CardContent>
-                  </Card>
+                  <View style={styles.card}>
+                    <Text style={styles.cardContent}>Something here</Text>
+                  </View>
                 </TouchableWithoutFeedback>
-                <Card>
-                  <CardContent>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>
                     Lorem ipsum dolor sit, amet consectetur adipisicing elit. consectetur
                     adipisicing elit.
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent>
+                  </Text>
+                </View>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>
                     Magni ipsam, provident explicabo facilis nihil doloremque.
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent>vel quisquam, esse quidem quae ea dolorum aut corrupt</CardContent>
-                </Card>
-                <Card>
-                  <CardContent>Something here</CardContent>
-                </Card>
-              </ContentColumn>
-              <ContentColumn>
-                <Card>
-                  <CardContent>
+                  </Text>
+                </View>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>
+                    vel quisquam, esse quidem quae ea dolorum aut corrupt
+                  </Text>
+                </View>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>Something here</Text>
+                </View>
+              </View>
+              <View style={styles.contentColumn}>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>
                     Magni ipsam, provident explicabo facilis nihil doloremque.
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent>Something here</CardContent>
-                </Card>
-                <Card>
-                  <CardContent>vel quisquam, esse quidem quae ea dolorum aut corrupt</CardContent>
-                </Card>
-                <Card>
-                  <CardContent>
+                  </Text>
+                </View>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>Something here</Text>
+                </View>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>
+                    vel quisquam, esse quidem quae ea dolorum aut corrupt
+                  </Text>
+                </View>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>
                     Lorem ipsum dolor sit, amet consectetur adipisicing elit. consectetur
                     adipisicing elit.
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent>
+                  </Text>
+                </View>
+                <View style={styles.card}>
+                  <Text style={styles.cardContent}>
                     Magni ipsam, provident explicabo facilis nihil doloremque.
-                  </CardContent>
-                </Card>
-              </ContentColumn>
-            </Content>
-          </Main>
-        </AppScrollView>
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
         <FabButton
           buttons={[
             {
@@ -178,3 +124,53 @@ export const HomeScreen: React.FC = () => {
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  scrollView: {
+    height: '100%',
+    backgroundColor: '#f7f7f7',
+  },
+  main: {
+    flex: 1,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ededed',
+    borderRadius: 25,
+    margin: 15,
+    paddingVertical: 0,
+    paddingHorizontal: 15,
+  },
+  searchInput: {
+    flex: 1,
+    paddingLeft: 10,
+    fontSize: 15,
+  },
+  clearButton: {
+    padding: 8,
+    marginRight: -4,
+  },
+  content: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+  },
+  contentColumn: {
+    flexGrow: 0,
+    flexBasis: Math.ceil(windowSize.width) / 2 - 20,
+  },
+  card: {
+    color: '#777777',
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    margin: 5,
+  },
+  cardContent: {
+    fontSize: 15,
+  },
+})
