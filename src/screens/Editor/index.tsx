@@ -25,7 +25,7 @@ export const EditorScreen: React.FC = () => {
     params: { noteId },
   } = useRoute<EditorScreenRouteProp>()
   const [title, setTitle] = useState('Note title')
-  const [isInEditMode, setIsInEditMode] = useState(false)
+  const [isEditingNote, setIsEditingNote] = useState(false)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const editorRef = useRef<WebView>()
 
@@ -35,7 +35,7 @@ export const EditorScreen: React.FC = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <AntIcon name="arrowleft" size={25} color="#444" />
         </TouchableOpacity>
-        {(isInEditMode || isEditingTitle) && (
+        {(isEditingNote || isEditingTitle) && (
           <TouchableOpacity
             onPress={() => {
               if (isEditingTitle) {
@@ -45,7 +45,7 @@ export const EditorScreen: React.FC = () => {
               }
 
               setIsEditingTitle(false)
-              setIsInEditMode(false)
+              setIsEditingNote(false)
             }}
           >
             <AntIcon name="check" size={25} color="#444" />
@@ -62,14 +62,17 @@ export const EditorScreen: React.FC = () => {
         ref={editorRef}
         onMessage={event => {
           if (event.nativeEvent.data === 'edit-start') {
-            setIsInEditMode(true)
+            setIsEditingNote(true)
+          }
+          if (event.nativeEvent.data === 'edit-stop') {
+            setIsEditingNote(false)
           }
         }}
         startInLoadingState={true}
         style={styles.editor}
         source={{ html: editorHtml }}
       />
-      {isInEditMode && (
+      {isEditingNote && (
         <View style={styles.formatToolbar}>
           <ScrollView horizontal style={styles.formatButtons}>
             <TouchableOpacity style={styles.formatButton}>

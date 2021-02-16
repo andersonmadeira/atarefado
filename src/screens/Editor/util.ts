@@ -20,8 +20,14 @@ export const editorHtml = `
     <div id="focusStealer" />
     <div id="editor" contenteditable="true">Heello <b>world</b></div>
     <script>
-      document.querySelector('#editor').addEventListener('focus', function () {
+      const editor = document.querySelector('#editor')
+
+      editor.addEventListener('focus', function () {
         window.ReactNativeWebView.postMessage('edit-start')
+      })
+
+      editor.addEventListener('blur', function () {
+        window.ReactNativeWebView.postMessage('edit-stop')
       })
     </script>
   </body>
