@@ -9,14 +9,15 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   View,
+  TouchableOpacity,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import AntIcon from 'react-native-vector-icons/AntDesign'
-import { FabButton } from '../../components'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
+
 import { RootStackParamList } from '../types'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { FabButton } from '../../components'
 
 const windowSize = Dimensions.get('window')
 
