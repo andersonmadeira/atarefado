@@ -9,10 +9,10 @@ import {
   ScrollView,
 } from 'react-native'
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import Icon from 'react-native-vector-icons/FontAwesome5'
 import AntIcon from 'react-native-vector-icons/AntDesign'
 import { WebView } from 'react-native-webview'
 
+import { FormatButton } from '../../components'
 import { RootStackParamList } from '../types'
 import { editorHtml } from './util'
 
@@ -75,36 +75,16 @@ export const EditorScreen: React.FC = () => {
       {isEditingNote && (
         <View style={styles.formatToolbar}>
           <ScrollView horizontal style={styles.formatButtons}>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="align-left" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="align-center" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="align-right" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="align-justify" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="bold" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="underline" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="italic" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="list-ul" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="list-ol" size={20} color="#111" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.formatButton}>
-              <Icon name="link" size={20} color="#111" />
-            </TouchableOpacity>
+            <FormatButton name="align-left" />
+            <FormatButton name="align-center" />
+            <FormatButton name="align-right" />
+            <FormatButton name="align-justify" />
+            <FormatButton name="bold" />
+            <FormatButton name="underline" />
+            <FormatButton name="italic" />
+            <FormatButton name="list-ul" />
+            <FormatButton name="list-ol" />
+            <FormatButton name="link" />
           </ScrollView>
         </View>
       )}
@@ -142,13 +122,5 @@ const styles = StyleSheet.create({
   },
   formatButtons: {
     backgroundColor: '#f7f7f7',
-  },
-  formatButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f7f7f7',
-    padding: 10,
-    width: 60,
-    height: 60,
   },
 })
