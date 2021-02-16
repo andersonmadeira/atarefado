@@ -82,17 +82,27 @@ export const HomeScreen: React.FC = () => {
   const noteList = useMemo(() => {
     const leftNotes = []
     const rightNotes = []
+    const regex = new RegExp(searchTerm, 'i')
+    let currentPosition = 0
 
     for (let i = 0; i < notes.length; i++) {
+      const notesPlainContent = notes[i].content.replace(/(<([^>]+)>)/gi, '')
+
+      if (!regex.test(notesPlainContent)) {
+        continue
+      }
+
       const noteElement = (
         <NoteCard
           key={notes[i].id}
-          text={notes[i].content.replace(/(<([^>]+)>)/gi, '')}
+          text={notesPlainContent}
           onPress={() => navigation.navigate('Editor', { note: notes[i] })}
         />
       )
 
-      if ((i + 1) % 2) {
+      currentPosition += 1
+
+      if (currentPosition % 2) {
         leftNotes.push(noteElement)
         continue
       }
@@ -106,9 +116,7 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.contentColumn}>{rightNotes}</View>
       </>
     )
-  }, [navigation])
-
-  //
+  }, [searchTerm, navigation])
 
   return (
     <>
