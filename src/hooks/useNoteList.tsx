@@ -1,14 +1,34 @@
 import React, { useState, useEffect } from 'react'
-import { Dimensions, StyleSheet, View } from 'react-native'
+import { Alert, Dimensions, StyleSheet, View } from 'react-native'
 
 import { NoteCard } from '../components'
-import { notes } from '../constants'
+import { Note } from '../types'
 import { shortenText } from '../utils/text'
+import { fetchNotes } from '../storage'
 
 const windowSize = Dimensions.get('window')
 
-export function useNoteList(searchTerm: string, onPress: (note: Note) => void): JSX.Element {
+export interface UseNoteListReturn {
+  elements: JSX.Element
+  amount: number
+}
+
+export function useNoteList(searchTerm: string, onPress: (note: Note) => void): UseNoteListReturn {
+  const [notes, setNotes] = useState<Note[]>([])
   const [elements, setElements] = useState<JSX.Element>(null)
+
+  useEffect(() => {
+    const retrieveStoredNotes = async () => {
+      try {
+        const storedNotes = await fetchNotes()
+        setNotes(storedNotes)
+      } catch {
+        Alert.alert('Error occured', 'Failed to retrieve notes')
+      }
+    }
+
+    retrieveStoredNotes()
+  }, [])
 
   useEffect(() => {
     const leftNotes = []
@@ -50,9 +70,12 @@ export function useNoteList(searchTerm: string, onPress: (note: Note) => void): 
         <View style={styles.contentColumn}>{rightNotes}</View>
       </>,
     )
-  }, [searchTerm, onPress])
+  }, [searchTerm, notes, onPress])
 
-  return elements
+  return {
+    elements,
+    amount: notes.length,
+  }
 }
 
 const styles = StyleSheet.create({

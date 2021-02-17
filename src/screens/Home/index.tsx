@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   SafeAreaView,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Text,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import AntIcon from 'react-native-vector-icons/AntDesign'
@@ -29,7 +30,10 @@ export const HomeScreen: React.FC = () => {
     },
     [navigation],
   )
-  const noteListElements = useNoteList(debouncedSearchTerm, navigateToEditor)
+  const { elements: noteListElements, amount: amountOfNotes } = useNoteList(
+    debouncedSearchTerm,
+    navigateToEditor,
+  )
 
   return (
     <>
@@ -51,7 +55,13 @@ export const HomeScreen: React.FC = () => {
                 </TouchableOpacity>
               )}
             </View>
-            <View style={styles.content}>{noteListElements}</View>
+            <View style={styles.content}>
+              {amountOfNotes ? (
+                noteListElements
+              ) : (
+                <Text style={styles.emptyText}>You don't have any notes so far</Text>
+              )}
+            </View>
           </View>
         </ScrollView>
         <FabButton
@@ -107,5 +117,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     flexWrap: 'wrap',
+  },
+  emptyText: {
+    color: '#555',
+    marginTop: 50,
   },
 })
