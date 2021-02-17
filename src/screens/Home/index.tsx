@@ -14,9 +14,9 @@ import AntIcon from 'react-native-vector-icons/AntDesign'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 
-import { Note, RootStackParamList } from '../types'
+import { Note, RootStackParamList } from '../../types'
 import { FabButton } from '../../components'
-import { useDebounce, useNoteList } from '../../hooks'
+import { useDebounce, useNotes } from '../../hooks'
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
 
@@ -30,10 +30,10 @@ export const HomeScreen: React.FC = () => {
     },
     [navigation],
   )
-  const { elements: noteListElements, amount: amountOfNotes } = useNoteList(
-    debouncedSearchTerm,
-    navigateToEditor,
-  )
+  const { elements: noteListElements, amount: amountOfNotes } = useNotes({
+    searchTerm: debouncedSearchTerm,
+    onPress: navigateToEditor,
+  })
 
   return (
     <>

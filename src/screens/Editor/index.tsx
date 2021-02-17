@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Dimensions,
   StyleSheet,
@@ -13,8 +13,9 @@ import AntIcon from 'react-native-vector-icons/AntDesign'
 import { WebView } from 'react-native-webview'
 
 import { FormatButton } from '../../components'
-import { RootStackParamList } from '../types'
+import { RootStackParamList } from '../../types'
 import { editorHtml } from '../../utils/editor'
+import { useNotes } from '../../hooks'
 
 type EditorScreenNavigationProp = NavigationProp<RootStackParamList, 'Editor'>
 type EditorScreenRouteProp = RouteProp<RootStackParamList, 'Editor'>
@@ -24,11 +25,12 @@ export const EditorScreen: React.FC = () => {
   const {
     params: { note },
   } = useRoute<EditorScreenRouteProp>()
-  const [title, setTitle] = useState(note.title)
-  const [content, setContent] = useState(note.content)
+  const [title, setTitle] = useState(note ? note.title : '')
+  const [content, setContent] = useState(note ? note.content : '')
   const [isEditingNote, setIsEditingNote] = useState(false)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const editorRef = useRef<WebView>()
+  const { addNote, removeNote } = useNotes()
 
   const executeJS = useCallback((code: string) => {
     editorRef.current.injectJavaScript(code)

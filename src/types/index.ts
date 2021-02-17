@@ -6,5 +6,5 @@ export interface Note {
 
 export type RootStackParamList = {
   Home: undefined
-  Editor: { note: Note }
+  Editor: { note?: Note }
 }

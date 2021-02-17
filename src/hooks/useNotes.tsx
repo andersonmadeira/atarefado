@@ -1,27 +1,53 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Alert, Dimensions, StyleSheet, View } from 'react-native'
 
 import { NoteCard } from '../components'
 import { Note } from '../types'
 import { shortenText } from '../utils/text'
-import { fetchNotes } from '../storage'
+import { fetchNotes, saveNotes } from '../storage'
+import { notes as sampleNotes } from '../constants'
 
 const windowSize = Dimensions.get('window')
 
-export interface UseNoteListReturn {
+export interface UseNotesReturn {
   elements: JSX.Element
   amount: number
+  addNote: (note: Note) => Promise<void>
+  removeNote: (id: string) => Promise<void>
 }
 
-export function useNoteList(searchTerm: string, onPress: (note: Note) => void): UseNoteListReturn {
+export interface UseNotesParams {
+  searchTerm?: string
+  onPress?: (note: Note) => void
+}
+
+export function useNotes({ searchTerm = '', onPress }: UseNotesParams = {}): UseNotesReturn {
   const [notes, setNotes] = useState<Note[]>([])
   const [elements, setElements] = useState<JSX.Element>(null)
+
+  const addNote = useCallback(
+    async (note: Note): Promise<void> => {
+      const newNotes = [...notes, note]
+      saveNotes(newNotes)
+      setNotes(newNotes)
+    },
+    [notes],
+  )
+
+  const removeNote = useCallback(
+    async (id: string): Promise<void> => {
+      const newNotes = notes.filter(n => n.id !== id)
+      saveNotes(newNotes)
+      setNotes(newNotes)
+    },
+    [notes],
+  )
 
   useEffect(() => {
     const retrieveStoredNotes = async () => {
       try {
         const storedNotes = await fetchNotes()
-        setNotes(storedNotes)
+        setNotes(storedNotes.length ? storedNotes : sampleNotes)
       } catch {
         Alert.alert('Error occured', 'Failed to retrieve notes')
       }
@@ -50,7 +76,7 @@ export function useNoteList(searchTerm: string, onPress: (note: Note) => void): 
           key={notes[i].id}
           title={notes[i].title}
           text={`${excerpt}${excerpt.length < notesPlainContent.length ? '...' : ''}`}
-          onPress={() => onPress(notes[i])}
+          onPress={() => onPress && onPress(notes[i])}
         />
       )
 
@@ -75,6 +101,8 @@ export function useNoteList(searchTerm: string, onPress: (note: Note) => void): 
   return {
     elements,
     amount: notes.length,
+    addNote,
+    removeNote,
   }
 }
 

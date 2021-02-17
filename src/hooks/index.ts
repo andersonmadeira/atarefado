@@ -1,2 +1,2 @@
-export * from './useNoteList'
+export * from './useNotes'
 export * from './useDebounce'

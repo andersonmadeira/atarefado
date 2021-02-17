@@ -14,6 +14,10 @@ export const editorHtml = `
         height: 100%;
         padding: 10px 14px;
       }
+
+      #editor:empty:before {
+        content: attr(placeholder)
+      }
     </style>
   </head>
   <body>
