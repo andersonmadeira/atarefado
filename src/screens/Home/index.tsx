@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import {
   Dimensions,
   SafeAreaView,
@@ -17,107 +17,69 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import { Note, RootStackParamList } from '../types'
 import { FabButton, NoteCard } from '../../components'
 import { shortenText } from '../../utils/text'
+import { notes } from './constants'
 
 const windowSize = Dimensions.get('window')
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
 
-export const notes: Note[] = [
-  {
-    id: '1',
-    title: 'Something',
-    content: '<b>Something</b> here',
-  },
-  {
-    id: '2',
-    title: 'Lorem ipsum',
-    content:
-      '<em>Lorem</em> ipsum <b>dolor</b> sit, amet consectetur adipisicing elit. consectetur adipisicing elit.',
-  },
-  {
-    id: '3',
-    title: 'Magni ipsam',
-    content: 'Magni ipsam, <em>provident</em> explicabo facilis nihil doloremque.',
-  },
-  {
-    id: '4',
-    title: 'Magni ipsam',
-    content: 'Magni <em><b>ipsam</b></em>, provident explicabo facilis nihil doloremque.',
-  },
-  {
-    id: '5',
-    title: 'Magni ipsam',
-    content: '<b>Magni ipsam, provident explicabo</b> facilis nihil doloremque.',
-  },
-  {
-    id: '6',
-    title: 'Vel quisquam',
-    content: '<b>Vel quisquam</b>, esse <em><b>quidem quae ea dolorum</b></em> aut corrupt',
-  },
-  {
-    id: '7',
-    title: 'Fugit magnam',
-    content: 'Fugit magnam quaerat molestiae voluptate adipisci harum reprehenderit aliquam',
-  },
-  {
-    id: '8',
-    title: 'Autem optio',
-    content: 'Autem optio exercitationem consequuntur cumque impedit',
-  },
-  {
-    id: '9',
-    title: 'Animi tempora',
-    content: 'Animi tempora asperiores illum facere! Accusamus cupiditate accusantium quia!',
-  },
-  {
-    id: '10',
-    title: 'Corporis cupiditate',
-    content: 'Corporis cupiditate dolorum iure quisquam numquam nesciunt',
-  },
-]
+function renderNoteList(searchTerm: string, onPress: (note: Note) => void) {
+  const leftNotes = []
+  const rightNotes = []
+  const searchRegEx = new RegExp(searchTerm, 'i')
+  let currentPosition = 0
+
+  for (let i = 0; i < notes.length; i++) {
+    const notesPlainContent = notes[i].content.replace(/(<([^>]+)>)/gi, '')
+
+    if (!searchRegEx.test(notesPlainContent)) {
+      continue
+    }
+
+    const excerpt = shortenText(notesPlainContent, 50)
+
+    const noteElement = (
+      <NoteCard
+        key={notes[i].id}
+        title={notes[i].title}
+        text={`${excerpt}${excerpt.length < notesPlainContent.length ? '...' : ''}`}
+        onPress={() => onPress(notes[i])}
+      />
+    )
+
+    currentPosition += 1
+
+    if (currentPosition % 2) {
+      leftNotes.push(noteElement)
+      continue
+    }
+
+    rightNotes.push(noteElement)
+  }
+
+  return (
+    <>
+      <View style={styles.contentColumn}>{leftNotes}</View>
+      <View style={styles.contentColumn}>{rightNotes}</View>
+    </>
+  )
+}
 
 export const HomeScreen: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const navigation = useNavigation<HomeScreenNavigationProp>()
 
-  const noteList = useMemo(() => {
-    const leftNotes = []
-    const rightNotes = []
-    const searchRegEx = new RegExp(searchTerm, 'i')
-    let currentPosition = 0
+  const navigateToEditor = useCallback(
+    (note: Note) => {
+      navigation.navigate('Editor', { note })
+    },
+    [navigation],
+  )
 
-    for (let i = 0; i < notes.length; i++) {
-      const notesPlainContent = notes[i].content.replace(/(<([^>]+)>)/gi, '')
-
-      if (!searchRegEx.test(notesPlainContent)) {
-        continue
-      }
-
-      const noteElement = (
-        <NoteCard
-          key={notes[i].id}
-          text={shortenText(notesPlainContent, 50)}
-          onPress={() => navigation.navigate('Editor', { note: notes[i] })}
-        />
-      )
-
-      currentPosition += 1
-
-      if (currentPosition % 2) {
-        leftNotes.push(noteElement)
-        continue
-      }
-
-      rightNotes.push(noteElement)
-    }
-
-    return (
-      <>
-        <View style={styles.contentColumn}>{leftNotes}</View>
-        <View style={styles.contentColumn}>{rightNotes}</View>
-      </>
-    )
-  }, [searchTerm, navigation])
+  const noteList = useMemo(() => renderNoteList(searchTerm, navigateToEditor), [
+    searchTerm,
+    navigateToEditor,
+  ])
 
   return (
     <>
