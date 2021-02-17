@@ -14,7 +14,7 @@ import { WebView } from 'react-native-webview'
 
 import { FormatButton } from '../../components'
 import { RootStackParamList } from '../types'
-import { editorHtml } from './util'
+import { editorHtml } from '../../utils/editor'
 
 type EditorScreenNavigationProp = NavigationProp<RootStackParamList, 'Editor'>
 type EditorScreenRouteProp = RouteProp<RootStackParamList, 'Editor'>

@@ -16,6 +16,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 
 import { Note, RootStackParamList } from '../types'
 import { FabButton, NoteCard } from '../../components'
+import { shortenText } from '../../utils/text'
 
 const windowSize = Dimensions.get('window')
 
@@ -82,20 +83,20 @@ export const HomeScreen: React.FC = () => {
   const noteList = useMemo(() => {
     const leftNotes = []
     const rightNotes = []
-    const regex = new RegExp(searchTerm, 'i')
+    const searchRegEx = new RegExp(searchTerm, 'i')
     let currentPosition = 0
 
     for (let i = 0; i < notes.length; i++) {
       const notesPlainContent = notes[i].content.replace(/(<([^>]+)>)/gi, '')
 
-      if (!regex.test(notesPlainContent)) {
+      if (!searchRegEx.test(notesPlainContent)) {
         continue
       }
 
       const noteElement = (
         <NoteCard
           key={notes[i].id}
-          text={notesPlainContent}
+          text={shortenText(notesPlainContent, 50)}
           onPress={() => navigation.navigate('Editor', { note: notes[i] })}
         />
       )
