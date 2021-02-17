@@ -15,12 +15,13 @@ import { StackNavigationProp } from '@react-navigation/stack'
 
 import { Note, RootStackParamList } from '../types'
 import { FabButton } from '../../components'
-import { useNoteList } from '../../hooks'
+import { useDebounce, useNoteList } from '../../hooks'
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
 
 export const HomeScreen: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
+  const debouncedSearchTerm = useDebounce(searchTerm, 350)
   const navigation = useNavigation<HomeScreenNavigationProp>()
   const navigateToEditor = useCallback(
     (note: Note) => {
@@ -28,7 +29,7 @@ export const HomeScreen: React.FC = () => {
     },
     [navigation],
   )
-  const noteListElements = useNoteList(searchTerm, navigateToEditor)
+  const noteListElements = useNoteList(debouncedSearchTerm, navigateToEditor)
 
   return (
     <>
