@@ -1,10 +1,10 @@
 export interface Note {
-  id: string
+  id?: string
   title: string
   content: string
 }
 
 export type RootStackParamList = {
   Home: undefined
-  Editor: { note?: Note }
+  Editor: { note: Note } | undefined
 }

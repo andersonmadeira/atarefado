@@ -8,6 +8,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  TouchableWithoutFeedback,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import AntIcon from 'react-native-vector-icons/AntDesign'
@@ -15,7 +16,6 @@ import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 
 import { Note, RootStackParamList } from '../../types'
-import { FabButton } from '../../components'
 import { useDebounce, useNotes } from '../../hooks'
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
@@ -64,22 +64,11 @@ export const HomeScreen: React.FC = () => {
             </View>
           </View>
         </ScrollView>
-        <FabButton
-          buttons={[
-            {
-              icon: <AntIcon name="check" size={20} color="#fff" />,
-              action: () => console.log('Check!'),
-            },
-            {
-              icon: <AntIcon name="tago" size={20} color="#fff" />,
-              action: () => console.log('Category!'),
-            },
-            {
-              icon: <AntIcon name="filetext1" size={20} color="#fff" />,
-              action: () => console.log('Note!'),
-            },
-          ]}
-        />
+        <TouchableWithoutFeedback onPress={() => navigation.navigate('Editor', {})}>
+          <View style={styles.fabButton}>
+            <AntIcon name="plus" size={30} color="#fff" />
+          </View>
+        </TouchableWithoutFeedback>
       </SafeAreaView>
     </>
   )
@@ -121,5 +110,22 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#555',
     marginTop: 50,
+  },
+  fabButton: {
+    position: 'absolute',
+    backgroundColor: '#5682A3',
+    bottom: 30,
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 60 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowRadius: 10,
+    shadowColor: '#5682A3',
+    shadowOpacity: 0.3,
+    shadowOffset: {
+      height: 10,
+    },
   },
 })

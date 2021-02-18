@@ -33,6 +33,10 @@ export const editorHtml = `
       editor.addEventListener('blur', function () {
         window.ReactNativeWebView.postMessage('edit-stop')
       })
+
+      editor.addEventListener('input', function () {
+        window.ReactNativeWebView.postMessage(editor.innerHTML)
+      })
     </script>
   </body>
 </html>

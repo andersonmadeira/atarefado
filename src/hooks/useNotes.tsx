@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Alert, Dimensions, StyleSheet, View } from 'react-native'
+import uuid from 'react-native-uuid-generator'
 
 import { NoteCard } from '../components'
 import { Note } from '../types'
@@ -12,7 +13,7 @@ const windowSize = Dimensions.get('window')
 export interface UseNotesReturn {
   elements: JSX.Element
   amount: number
-  addNote: (note: Note) => Promise<void>
+  saveNote: (note: Note) => Promise<void>
   removeNote: (id: string) => Promise<void>
 }
 
@@ -22,13 +23,18 @@ export interface UseNotesParams {
 }
 
 export function useNotes({ searchTerm = '', onPress }: UseNotesParams = {}): UseNotesReturn {
-  const [notes, setNotes] = useState<Note[]>([])
+  const [notes, setNotes] = useState<Record<string, Note>>({})
   const [elements, setElements] = useState<JSX.Element>(null)
 
-  const addNote = useCallback(
+  const saveNote = useCallback(
     async (note: Note): Promise<void> => {
-      const newNotes = [...notes, note]
-      saveNotes(newNotes)
+      if (note.id === undefined) {
+        note.id = await uuid.getRandomUUID()
+      }
+
+      const newNotes = { ...notes, [note.id]: note }
+
+      await saveNotes(newNotes)
       setNotes(newNotes)
     },
     [notes],
@@ -36,9 +42,9 @@ export function useNotes({ searchTerm = '', onPress }: UseNotesParams = {}): Use
 
   const removeNote = useCallback(
     async (id: string): Promise<void> => {
-      const newNotes = notes.filter(n => n.id !== id)
-      saveNotes(newNotes)
-      setNotes(newNotes)
+      notes[id] = undefined
+      await saveNotes(notes)
+      setNotes(notes)
     },
     [notes],
   )
@@ -46,8 +52,9 @@ export function useNotes({ searchTerm = '', onPress }: UseNotesParams = {}): Use
   useEffect(() => {
     const retrieveStoredNotes = async () => {
       try {
+        //await saveNotes({})
         const storedNotes = await fetchNotes()
-        setNotes(storedNotes.length ? storedNotes : sampleNotes)
+        setNotes(Object.keys(storedNotes).length ? storedNotes : sampleNotes)
       } catch {
         Alert.alert('Error occured', 'Failed to retrieve notes')
       }
@@ -61,9 +68,11 @@ export function useNotes({ searchTerm = '', onPress }: UseNotesParams = {}): Use
     const rightNotes = []
     const searchRegEx = new RegExp(searchTerm, 'i')
     let currentPosition = 0
+    const noteKeys = Object.keys(notes)
 
-    for (let i = 0; i < notes.length; i++) {
-      const notesPlainContent = notes[i].content.replace(/(<([^>]+)>)/gi, '')
+    for (let i = 0; i < noteKeys.length; i++) {
+      const note = notes[noteKeys[i]]
+      const notesPlainContent = note.content.replace(/(<([^>]+)>)/gi, '')
 
       if (!searchRegEx.test(notesPlainContent)) {
         continue
@@ -71,12 +80,14 @@ export function useNotes({ searchTerm = '', onPress }: UseNotesParams = {}): Use
 
       const excerpt = shortenText(notesPlainContent, 50)
 
+      console.log('note.id', note.id)
+
       const noteElement = (
         <NoteCard
-          key={notes[i].id}
-          title={notes[i].title}
+          key={note.id}
+          title={note.title}
           text={`${excerpt}${excerpt.length < notesPlainContent.length ? '...' : ''}`}
-          onPress={() => onPress && onPress(notes[i])}
+          onPress={() => onPress && onPress(note)}
         />
       )
 
@@ -100,8 +111,8 @@ export function useNotes({ searchTerm = '', onPress }: UseNotesParams = {}): Use
 
   return {
     elements,
-    amount: notes.length,
-    addNote,
+    amount: Object.keys(notes).length,
+    saveNote,
     removeNote,
   }
 }

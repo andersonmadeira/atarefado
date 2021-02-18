@@ -7,6 +7,7 @@ import {
   Keyboard,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native'
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import AntIcon from 'react-native-vector-icons/AntDesign'
@@ -22,19 +23,24 @@ type EditorScreenRouteProp = RouteProp<RootStackParamList, 'Editor'>
 
 export const EditorScreen: React.FC = () => {
   const navigation = useNavigation<EditorScreenNavigationProp>()
-  const {
-    params: { note },
-  } = useRoute<EditorScreenRouteProp>()
+  const { params } = useRoute<EditorScreenRouteProp>()
+  const [note, setNote] = useState(params?.note)
   const [title, setTitle] = useState(note ? note.title : '')
   const [content, setContent] = useState(note ? note.content : '')
   const [isEditingNote, setIsEditingNote] = useState(false)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const editorRef = useRef<WebView>()
-  const { addNote, removeNote } = useNotes()
+  const { saveNote, removeNote } = useNotes()
 
   const executeJS = useCallback((code: string) => {
     editorRef.current.injectJavaScript(code)
   }, [])
+
+  console.log('note', note)
+  console.log('note.title', note?.title, '=', title)
+  console.log('note.content', note?.content, '=', content)
+
+  console.log('content', content)
 
   return (
     <View style={styles.container}>
@@ -42,22 +48,26 @@ export const EditorScreen: React.FC = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <AntIcon name="arrowleft" size={25} color="#444" />
         </TouchableOpacity>
-        {(isEditingNote || isEditingTitle) && (
-          <TouchableOpacity
-            onPress={() => {
-              if (isEditingTitle) {
-                Keyboard.dismiss()
-              } else {
-                executeJS('editor.blur()')
-              }
+        {(isEditingNote || isEditingTitle) &&
+          ((note ? note.title !== title : title !== '') ||
+            (note ? note.content !== content : true)) && (
+            <TouchableOpacity
+              onPress={() => {
+                if (isEditingTitle) {
+                  Keyboard.dismiss()
+                } else {
+                  executeJS('editor.blur()')
+                }
 
-              setIsEditingTitle(false)
-              setIsEditingNote(false)
-            }}
-          >
-            <AntIcon name="check" size={25} color="#444" />
-          </TouchableOpacity>
-        )}
+                setIsEditingTitle(false)
+                setIsEditingNote(false)
+
+                saveNote({ ...note, title, content })
+              }}
+            >
+              <AntIcon name="check" size={25} color="#444" />
+            </TouchableOpacity>
+          )}
       </View>
       <TextInput
         style={styles.title}
@@ -69,14 +79,20 @@ export const EditorScreen: React.FC = () => {
       <WebView
         ref={editorRef}
         source={{ html: editorHtml }}
+        on
         onLoadEnd={() => executeJS(`editor.innerHTML = "${content}"`)}
         onMessage={event => {
           if (event.nativeEvent.data === 'edit-start') {
             setIsEditingNote(true)
+            return
           }
+
           if (event.nativeEvent.data === 'edit-stop') {
             setIsEditingNote(false)
+            return
           }
+
+          setContent(event.nativeEvent.data)
         }}
         style={styles.editor}
       />
