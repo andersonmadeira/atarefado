@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 
 import { RootStackParamList } from '../../types'
-import { actionFetchNotes } from '../../store'
+import { actionFetchNotes, useActionDispatch } from '../../store'
 
 type SplashScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Splash'>
 
@@ -13,6 +13,7 @@ export const SplashScreen: React.FC = () => {
   const spinValue = useRef(new Animated.Value(0))
   const navigation = useNavigation<SplashScreenNavigationProp>()
   const [isLoading, setIsLoading] = useState(true)
+  const dispatch = useActionDispatch()
 
   const spin = useCallback(() => {
     spinValue.current.setValue(0)
@@ -27,14 +28,14 @@ export const SplashScreen: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      await actionFetchNotes()
+      await dispatch(actionFetchNotes())
       setIsLoading(false)
     }
 
     spin()
 
     init()
-  }, [spin])
+  }, [spin, dispatch])
 
   useEffect(() => {
     if (!isLoading) {
