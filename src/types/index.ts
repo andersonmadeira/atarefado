@@ -5,6 +5,7 @@ export interface Note {
 }
 
 export type RootStackParamList = {
+  Splash: undefined
   Home: undefined
   Editor: { note: Note } | undefined
 }

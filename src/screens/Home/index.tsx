@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import {
   SafeAreaView,
   ScrollView,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Text,
   TouchableWithoutFeedback,
+  Dimensions,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import AntIcon from 'react-native-vector-icons/AntDesign'
@@ -16,9 +17,14 @@ import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 
 import { Note, RootStackParamList } from '../../types'
-import { useDebounce, useNotes } from '../../hooks'
+import { useDebounce } from '../../hooks'
+import { NoteCard } from '../../components'
+import { useSelector } from 'react-redux'
+import { selectNotes } from '../../store'
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
+
+const windowSize = Dimensions.get('window')
 
 export const HomeScreen: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -30,10 +36,53 @@ export const HomeScreen: React.FC = () => {
     },
     [navigation],
   )
-  const { elements: noteListElements, amount: amountOfNotes } = useNotes({
-    searchTerm: debouncedSearchTerm,
-    onPress: navigateToEditor,
-  })
+  const { notes } = useSelector(selectNotes)
+
+  const noteListElements = useMemo(() => {
+    const leftNotes = []
+    const rightNotes = []
+    const searchRegEx = new RegExp(debouncedSearchTerm, 'i')
+    let currentPosition = 0
+    const noteKeys = Object.keys(notes)
+
+    for (let i = 0; i < noteKeys.length; i++) {
+      const note = notes[noteKeys[i]]
+      const notesPlainContent = note.content.replace(/(<([^>]+)>)/gi, '')
+
+      if (!searchRegEx.test(notesPlainContent)) {
+        continue
+      }
+
+      const excerpt = shortenText(notesPlainContent, 50)
+
+      console.log('note.id', note.id)
+
+      const noteElement = (
+        <NoteCard
+          key={note.id}
+          title={note.title}
+          text={`${excerpt}${excerpt.length < notesPlainContent.length ? '...' : ''}`}
+          onPress={() => navigateToEditor(note)}
+        />
+      )
+
+      currentPosition += 1
+
+      if (currentPosition % 2) {
+        leftNotes.push(noteElement)
+        continue
+      }
+
+      rightNotes.push(noteElement)
+    }
+
+    return leftNotes.length || rightNotes.length ? (
+      <>
+        <View style={styles.contentColumn}>{leftNotes}</View>
+        <View style={styles.contentColumn}>{rightNotes}</View>
+      </>
+    ) : null
+  }, [debouncedSearchTerm, notes, navigateToEditor])
 
   return (
     <>
@@ -56,7 +105,7 @@ export const HomeScreen: React.FC = () => {
               )}
             </View>
             <View style={styles.content}>
-              {amountOfNotes ? (
+              {noteListElements ? (
                 noteListElements
               ) : (
                 <Text style={styles.emptyText}>You don't have any notes so far</Text>
@@ -106,6 +155,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     flexWrap: 'wrap',
+  },
+  contentColumn: {
+    flexGrow: 0,
+    flexBasis: Math.ceil(windowSize.width) / 2 - 20,
   },
   emptyText: {
     color: '#555',

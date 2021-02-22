@@ -30,7 +30,6 @@ export const EditorScreen: React.FC = () => {
   const [isEditingNote, setIsEditingNote] = useState(false)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const editorRef = useRef<WebView>()
-  const { saveNote, removeNote } = useNotes()
 
   const executeJS = useCallback((code: string) => {
     editorRef.current.injectJavaScript(code)
