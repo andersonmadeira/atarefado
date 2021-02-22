@@ -21,6 +21,7 @@ import { useDebounce } from '../../hooks'
 import { NoteCard } from '../../components'
 import { useSelector } from 'react-redux'
 import { selectNotes } from '../../store'
+import { shortenText } from '../../utils/text'
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
 
@@ -37,6 +38,8 @@ export const HomeScreen: React.FC = () => {
     [navigation],
   )
   const { notes } = useSelector(selectNotes)
+
+  console.log('notes,', notes)
 
   const noteListElements = useMemo(() => {
     const leftNotes = []
@@ -108,7 +111,7 @@ export const HomeScreen: React.FC = () => {
               {noteListElements ? (
                 noteListElements
               ) : (
-                <Text style={styles.emptyText}>You don't have any notes so far</Text>
+                <Text style={styles.emptyText}>No notes were found</Text>
               )}
             </View>
           </View>

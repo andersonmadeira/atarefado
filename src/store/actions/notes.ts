@@ -1,15 +1,9 @@
-import uuid from 'react-native-uuid-generator'
-
 import { fetchNotes, saveNotes } from '../../storage'
 import { selectNotes } from '../selectors'
 import {
-  actionSaveNote,
   actionSaveNoteStart,
   actionSaveNoteSuccess,
   actionSaveNoteFailure,
-  actionUpdateNoteStart,
-  actionUpdateNoteSuccess,
-  actionUpdateNoteFailure,
   actionRemoveNoteStart,
   actionRemoveNoteSuccess,
   actionRemoveNoteFailure,
@@ -21,7 +15,7 @@ import { AppThunk } from '../store'
 
 export const actionFetchNotes = (): AppThunk => async dispatch => {
   try {
-    dispatch(actionFetchNotesStart(err))
+    dispatch(actionFetchNotesStart())
 
     const notes = await fetchNotes()
 
@@ -31,44 +25,23 @@ export const actionFetchNotes = (): AppThunk => async dispatch => {
   }
 }
 
-export const actionAddNote = (title: string, content: string): AppThunk => async (
-  dispatch,
-  getState,
-) => {
+export const actionSaveNote = (note: Note): AppThunk => async (dispatch, getState) => {
   try {
     const { notes } = selectNotes(getState())
 
-    dispatch(actionSaveNoteStart(err))
+    dispatch(actionSaveNoteStart())
 
-    const id = await uuid.getRandomUUID()
-
-    const note = { id, title, content }
+    if (!note.id) {
+      note.id = await uuid.getRandomUUID()
+    }
 
     notes[note.id] = note
 
     await saveNotes(notes)
 
-    dispatch(actionSaveNote(note))
-    dispatch(actionSaveNoteSuccess())
+    dispatch(actionSaveNoteSuccess(note))
   } catch (err) {
     dispatch(actionSaveNoteFailure(err))
-  }
-}
-
-export const actionUpdateNote = (note: Note): AppThunk => async (dispatch, getState) => {
-  try {
-    const { notes } = selectNotes(getState())
-
-    dispatch(actionUpdateNoteStart())
-
-    notes[note.id] = note
-
-    await saveNotes(notes)
-
-    dispatch(actionSaveNote(note))
-    dispatch(actionUpdateNoteSuccess())
-  } catch (err) {
-    dispatch(actionUpdateNoteFailure(err))
   }
 }
 
@@ -82,8 +55,7 @@ export const actionRemoveNote = (id: string): AppThunk => async (dispatch, getSt
 
     await saveNotes(notes)
 
-    dispatch(actionRemoveNote(id))
-    dispatch(actionRemoveNoteSuccess())
+    dispatch(actionRemoveNoteSuccess(id))
   } catch (err) {
     dispatch(actionRemoveNoteFailure(err))
   }

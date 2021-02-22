@@ -17,7 +17,8 @@ export const notesSlice = createSlice({
     actionSaveNoteStart: state => {
       state.loading = true
     },
-    actionSaveNoteSuccess: state => {
+    actionSaveNoteSuccess: (state, action: PayloadAction<Note>) => {
+      state.notes[action.payload.id] = action.payload
       state.loading = false
       state.error = null
     },
@@ -25,21 +26,11 @@ export const notesSlice = createSlice({
       state.loading = false
       state.error = action.payload
     },
-    actionUpdateNoteStart: state => {
-      state.loading = true
-    },
-    actionUpdateNoteSuccess: state => {
-      state.loading = false
-      state.error = null
-    },
-    actionUpdateNoteFailure: (state, action: PayloadAction<string>) => {
-      state.loading = false
-      state.error = action.payload
-    },
     actionRemoveNoteStart: state => {
       state.loading = true
     },
-    actionRemoveNoteSuccess: state => {
+    actionRemoveNoteSuccess: (state, action: PayloadAction<string>) => {
+      state.notes[action.payload] = undefined
       state.loading = false
       state.error = null
     },
@@ -59,12 +50,6 @@ export const notesSlice = createSlice({
       state.loading = false
       state.error = action.payload
     },
-    actionSaveNote: (state, action: PayloadAction<Note>) => {
-      state.notes[action.payload.id] = action.payload
-    },
-    actionRemoveNote: (state, action: PayloadAction<string>) => {
-      state.notes[action.payload] = undefined
-    },
   },
 })
 
@@ -72,15 +57,10 @@ export const {
   actionSaveNoteStart,
   actionSaveNoteSuccess,
   actionSaveNoteFailure,
-  actionUpdateNoteStart,
-  actionUpdateNoteSuccess,
-  actionUpdateNoteFailure,
   actionRemoveNoteStart,
   actionRemoveNoteSuccess,
   actionRemoveNoteFailure,
   actionFetchNotesStart,
   actionFetchNotesSuccess,
   actionFetchNotesFailure,
-  actionSaveNote,
-  actionRemoveNote,
 } = notesSlice.actions

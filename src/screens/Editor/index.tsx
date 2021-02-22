@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import {
   Dimensions,
   StyleSheet,
@@ -7,16 +7,16 @@ import {
   Keyboard,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native'
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import AntIcon from 'react-native-vector-icons/AntDesign'
 import { WebView } from 'react-native-webview'
+import uuid from 'react-native-uuid-generator'
 
 import { FormatButton } from '../../components'
 import { RootStackParamList } from '../../types'
 import { editorHtml } from '../../utils/editor'
-import { useNotes } from '../../hooks'
+import { actionSaveNote, useActionDispatch } from '../../store'
 
 type EditorScreenNavigationProp = NavigationProp<RootStackParamList, 'Editor'>
 type EditorScreenRouteProp = RouteProp<RootStackParamList, 'Editor'>
@@ -30,16 +30,11 @@ export const EditorScreen: React.FC = () => {
   const [isEditingNote, setIsEditingNote] = useState(false)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const editorRef = useRef<WebView>()
+  const dispatch = useActionDispatch()
 
   const executeJS = useCallback((code: string) => {
     editorRef.current.injectJavaScript(code)
   }, [])
-
-  console.log('note', note)
-  console.log('note.title', note?.title, '=', title)
-  console.log('note.content', note?.content, '=', content)
-
-  console.log('content', content)
 
   return (
     <View style={styles.container}>
@@ -51,7 +46,7 @@ export const EditorScreen: React.FC = () => {
           ((note ? note.title !== title : title !== '') ||
             (note ? note.content !== content : true)) && (
             <TouchableOpacity
-              onPress={() => {
+              onPress={async () => {
                 if (isEditingTitle) {
                   Keyboard.dismiss()
                 } else {
@@ -61,7 +56,16 @@ export const EditorScreen: React.FC = () => {
                 setIsEditingTitle(false)
                 setIsEditingNote(false)
 
-                saveNote({ ...note, title, content })
+                console.log('note: ', note)
+
+                const newNote = { ...note, title, content }
+
+                if (!note) {
+                  newNote.id = await uuid.getRandomUUID()
+                }
+
+                await dispatch(actionSaveNote(newNote))
+                setNote(newNote)
               }}
             >
               <AntIcon name="check" size={25} color="#444" />

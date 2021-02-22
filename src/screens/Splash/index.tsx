@@ -20,7 +20,7 @@ export const SplashScreen: React.FC = () => {
     Animated.timing(spinValue.current, {
       toValue: 1,
       duration: 700,
-      easing: Easing.ease,
+      easing: Easing.linear,
       useNativeDriver: false,
     }).start(() => spin())
   }, [])
@@ -38,7 +38,7 @@ export const SplashScreen: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      // navigation.navigate('Home')
+      navigation.navigate('Home')
     }
   }, [isLoading, navigation])
 
