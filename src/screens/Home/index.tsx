@@ -39,8 +39,6 @@ export const HomeScreen: React.FC = () => {
   )
   const { notes } = useSelector(selectNotes)
 
-  console.log('notes,', notes)
-
   const noteListElements = useMemo(() => {
     const leftNotes = []
     const rightNotes = []

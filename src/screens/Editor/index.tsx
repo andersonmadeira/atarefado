@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import AntIcon from 'react-native-vector-icons/AntDesign'
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5'
 import { WebView } from 'react-native-webview'
 import uuid from 'react-native-uuid-generator'
 
@@ -28,7 +29,7 @@ export const EditorScreen: React.FC = () => {
   const [title, setTitle] = useState(note ? note.title : '')
   const [content, setContent] = useState(note ? note.content : '')
   const [isEditingNote, setIsEditingNote] = useState(false)
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
   const editorRef = useRef<WebView>()
   const dispatch = useActionDispatch()
 
@@ -42,22 +43,10 @@ export const EditorScreen: React.FC = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <AntIcon name="arrowleft" size={25} color="#444" />
         </TouchableOpacity>
-        {(isEditingNote || isEditingTitle) &&
-          ((note ? note.title !== title : title !== '') ||
-            (note ? note.content !== content : true)) && (
+        <View style={styles.actionButtonsContainer}>
+          {isDirty && (
             <TouchableOpacity
               onPress={async () => {
-                if (isEditingTitle) {
-                  Keyboard.dismiss()
-                } else {
-                  executeJS('editor.blur()')
-                }
-
-                setIsEditingTitle(false)
-                setIsEditingNote(false)
-
-                console.log('note: ', note)
-
                 const newNote = { ...note, title, content }
 
                 if (!note) {
@@ -65,24 +54,47 @@ export const EditorScreen: React.FC = () => {
                 }
 
                 await dispatch(actionSaveNote(newNote))
+
                 setNote(newNote)
+
+                setIsDirty(false)
+
+                Keyboard.dismiss()
+                setIsEditingNote(false)
+                executeJS('editor.blur()')
               }}
+              style={styles.actionButton}
+            >
+              <FontAwesomeIcon solid name="save" size={24} color="#444" />
+            </TouchableOpacity>
+          )}
+          {isEditingNote && (
+            <TouchableOpacity
+              onPress={async () => {
+                Keyboard.dismiss()
+                setIsEditingNote(false)
+                executeJS('editor.blur()')
+              }}
+              style={styles.actionButton}
             >
               <AntIcon name="check" size={25} color="#444" />
             </TouchableOpacity>
           )}
+        </View>
       </View>
       <TextInput
         style={styles.title}
         value={title}
-        onFocus={() => setIsEditingTitle(true)}
-        onChangeText={text => setTitle(text)}
+        onFocus={() => setIsEditingNote(true)}
+        onChangeText={text => {
+          setTitle(text)
+          setIsDirty(true)
+        }}
         placeholder="Note title"
       />
       <WebView
         ref={editorRef}
         source={{ html: editorHtml }}
-        on
         onLoadEnd={() => executeJS(`editor.innerHTML = "${content}"`)}
         onMessage={event => {
           if (event.nativeEvent.data === 'edit-start') {
@@ -91,11 +103,12 @@ export const EditorScreen: React.FC = () => {
           }
 
           if (event.nativeEvent.data === 'edit-stop') {
-            setIsEditingNote(false)
             return
           }
 
           setContent(event.nativeEvent.data)
+          setIsDirty(true)
+          setIsEditingNote(true)
         }}
         style={styles.editor}
       />
@@ -138,6 +151,12 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     paddingHorizontal: 20,
     width: Dimensions.get('window').width,
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+  },
+  actionButton: {
+    marginLeft: 20,
   },
   editor: {
     width: Dimensions.get('window').width,
