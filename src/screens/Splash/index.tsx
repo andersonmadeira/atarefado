@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react'
-import { Animated, StyleSheet, View, Easing } from 'react-native'
+import { Animated, StyleSheet, View, Easing, StatusBar } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 
 import { RootStackParamList } from '../../types'
 import { actionFetchNotes, useActionDispatch } from '../../store'
+import { theme } from '../../utils/theme'
 
 type SplashScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Splash'>
 
@@ -51,11 +52,14 @@ export const SplashScreen: React.FC = () => {
   console.log(spinAngle)
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={{ transform: [{ rotate: spinAngle }] }}>
-        <Icon name="loading1" size={32} color="#111" />
-      </Animated.View>
-    </View>
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor={theme.secondary} />
+      <View style={styles.container}>
+        <Animated.View style={{ transform: [{ rotate: spinAngle }] }}>
+          <Icon name="loading1" size={32} color={theme.primaryDark} />
+        </Animated.View>
+      </View>
+    </>
   )
 }
 
@@ -64,5 +68,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: theme.secondary,
   },
 })

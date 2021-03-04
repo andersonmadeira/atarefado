@@ -22,6 +22,7 @@ import { NoteCard } from '../../components'
 import { useSelector } from 'react-redux'
 import { selectNotes } from '../../store'
 import { shortenText } from '../../utils/text'
+import { theme } from '../../utils/theme'
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
 
@@ -87,7 +88,7 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor="#F7F7F7" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.secondary} />
       <SafeAreaView>
         <ScrollView style={styles.scrollView}>
           <View style={styles.main}>
@@ -127,7 +128,7 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   scrollView: {
     height: '100%',
-    backgroundColor: '#f7f7f7',
+    backgroundColor: theme.secondary,
   },
   main: {
     flex: 1,
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   },
   fabButton: {
     position: 'absolute',
-    backgroundColor: '#5682A3',
+    backgroundColor: theme.primary,
     bottom: 30,
     right: 30,
     width: 60,
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowRadius: 10,
-    shadowColor: '#5682A3',
+    shadowColor: theme.primary,
     shadowOpacity: 0.3,
     shadowOffset: {
       height: 10,

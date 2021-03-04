@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { Animated, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign'
+import { theme } from '../../utils/theme'
 
 function getButtonAnimatedStyle(animationValue: Animated.Value, index: number) {
   return {
@@ -84,14 +85,14 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    backgroundColor: '#5682A3',
+    backgroundColor: theme.primary,
     width: 60,
     height: 60,
     borderRadius: 60 / 2,
     justifyContent: 'center',
     alignItems: 'center',
     shadowRadius: 10,
-    shadowColor: '#5682A3',
+    shadowColor: theme.primary,
     shadowOpacity: 0.3,
     shadowOffset: {
       height: 10,
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 48 / 2,
-    backgroundColor: '#466B86',
-    shadowColor: '#466B86',
+    backgroundColor: theme.primaryDark,
+    shadowColor: theme.primaryDark,
   },
 })

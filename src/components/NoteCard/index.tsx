@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native'
+import { theme } from '../../utils/theme'
 
 export interface NoteCardProps {
   title: string
@@ -20,7 +21,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({ title, text, onPress }) => {
 
 const styles = StyleSheet.create({
   wrapper: {
-    color: '#777777',
+    color: '#333',
     backgroundColor: '#fff',
     borderRadius: 15,
     paddingHorizontal: 20,
@@ -28,11 +29,13 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   title: {
+    color: '#555',
     fontWeight: 'bold',
     marginTop: 5,
     marginBottom: 10,
   },
   content: {
+    color: '#333',
     fontSize: 15,
   },
 })
