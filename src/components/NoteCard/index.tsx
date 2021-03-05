@@ -21,21 +21,21 @@ export const NoteCard: React.FC<NoteCardProps> = ({ title, text, onPress }) => {
 
 const styles = StyleSheet.create({
   wrapper: {
-    color: '#333',
-    backgroundColor: '#fff',
+    color: theme.primary,
+    backgroundColor: theme.secondary,
     borderRadius: 15,
     paddingHorizontal: 20,
     paddingVertical: 10,
     margin: 5,
   },
   title: {
-    color: '#555',
+    color: theme.primary,
     fontWeight: 'bold',
     marginTop: 5,
     marginBottom: 10,
   },
   content: {
-    color: '#333',
+    color: theme.primary,
     fontSize: 15,
   },
 })

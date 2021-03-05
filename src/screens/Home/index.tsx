@@ -88,12 +88,12 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor={theme.secondary} />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.lightGray} />
       <SafeAreaView>
         <ScrollView style={styles.scrollView}>
           <View style={styles.main}>
             <View style={styles.searchContainer}>
-              <Icon name="search" size={15} color="#999" />
+              <Icon name="search" size={15} color={theme.darkerGray} />
               <TextInput
                 placeholder="Procurar anotações"
                 value={searchTerm}
@@ -102,7 +102,7 @@ export const HomeScreen: React.FC = () => {
               />
               {searchTerm !== '' && (
                 <TouchableOpacity onPress={() => setSearchTerm('')} style={styles.clearButton}>
-                  <Icon name="times" size={15} color="#999" />
+                  <Icon name="times" size={15} color={theme.darkerGray} />
                 </TouchableOpacity>
               )}
             </View>
@@ -117,7 +117,7 @@ export const HomeScreen: React.FC = () => {
         </ScrollView>
         <TouchableWithoutFeedback onPress={() => navigation.navigate('Editor', {})}>
           <View style={styles.fabButton}>
-            <AntIcon name="plus" size={30} color="#fff" />
+            <AntIcon name="plus" size={30} color={theme.white} />
           </View>
         </TouchableWithoutFeedback>
       </SafeAreaView>
@@ -128,7 +128,7 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   scrollView: {
     height: '100%',
-    backgroundColor: theme.secondary,
+    backgroundColor: theme.lightGray,
   },
   main: {
     flex: 1,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ededed',
+    backgroundColor: theme.darkGray,
     borderRadius: 25,
     margin: 15,
     paddingVertical: 0,
