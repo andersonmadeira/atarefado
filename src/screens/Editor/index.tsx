@@ -99,7 +99,10 @@ export const EditorScreen: React.FC = () => {
         <WebView
           ref={editorRef}
           source={{ html: editorHtml }}
-          onLoadEnd={() => executeJS(`editor.innerHTML = "${content}"`)}
+          onLoadEnd={() => {
+            executeJS(`editor.innerHTML = "${content}"`)
+            executeJS(`editor.style.color = "${theme.primary}"`)
+          }}
           onMessage={event => {
             if (event.nativeEvent.data === 'edit-start') {
               setIsEditingNote(true)
